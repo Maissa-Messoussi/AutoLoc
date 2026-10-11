@@ -1,4 +1,5 @@
 package tn.esprit.tpautoloc.domain;
+
 import tn.esprit.tpautoloc.domain.enums.RoleEmploye;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,9 +20,12 @@ public class Employe {
     private Long idEmploye;
 
     private String nom;
-
     private String prenom;
 
     @Enumerated(EnumType.STRING)
     private RoleEmploye role;
+
+    @ManyToOne
+    @JoinColumn(name = "id_agence")
+    private Agence agence;
 }
