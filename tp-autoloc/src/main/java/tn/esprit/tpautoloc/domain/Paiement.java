@@ -1,5 +1,6 @@
 package tn.esprit.tpautoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import tn.esprit.tpautoloc.domain.enums.ModePaiement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class Paiement {
     private ModePaiement modePaiement;
 
     @ManyToOne
+    @JsonBackReference("contrat-paiements")
     @JoinColumn(name = "id_contrat")
     private Contrat contrat;
 }

@@ -1,5 +1,6 @@
 package tn.esprit.tpautoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import tn.esprit.tpautoloc.domain.enums.StatutReservation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,10 +30,12 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "id_client")
+    @JsonBackReference("client-reservations")
     private Client client;
 
     @ManyToOne
     @JoinColumn(name = "id_vehicule")
+    @JsonBackReference("vehicule-reservations")
     private Vehicule vehicule;
 
     @OneToOne

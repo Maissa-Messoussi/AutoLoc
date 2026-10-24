@@ -1,5 +1,6 @@
 package tn.esprit.tpautoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,8 +27,10 @@ public class Agence {
     private String telephone;
 
     @OneToMany(mappedBy = "agence")
+    @JsonManagedReference("agence-employes")
     private List<Employe> employes = new ArrayList<>();
 
     @OneToMany(mappedBy = "agence")
+    @JsonManagedReference("agence-vehicules")
     private List<Vehicule> vehicules = new ArrayList<>();
 }

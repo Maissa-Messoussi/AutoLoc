@@ -1,5 +1,6 @@
 package tn.esprit.tpautoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import tn.esprit.tpautoloc.domain.enums.RoleEmploye;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,5 +28,6 @@ public class Employe {
 
     @ManyToOne
     @JoinColumn(name = "id_agence")
+    @JsonBackReference("agence-employes")
     private Agence agence;
 }

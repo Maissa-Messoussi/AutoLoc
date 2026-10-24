@@ -1,5 +1,6 @@
 package tn.esprit.tpautoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,5 +31,7 @@ public class Contrat {
     private Reservation reservation;
 
     @OneToMany(mappedBy = "contrat")
+    @JsonManagedReference("contrat-paiements")
+
     private List<Paiement> paiements = new ArrayList<>();
 }

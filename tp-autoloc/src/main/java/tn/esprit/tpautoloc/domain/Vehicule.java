@@ -1,5 +1,7 @@
 package tn.esprit.tpautoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import tn.esprit.tpautoloc.domain.enums.CategorieVehicule;
 import tn.esprit.tpautoloc.domain.enums.StatutVehicule;
 import jakarta.persistence.*;
@@ -37,12 +39,15 @@ public class Vehicule {
 
     @ManyToOne
     @JoinColumn(name = "id_agence")
+    @JsonBackReference("agence-vehicules")
     private Agence agence;
 
     @OneToMany(mappedBy = "vehicule")
+    @JsonManagedReference("vehicule-reservations")
     private List<Reservation> reservations = new ArrayList<>();
 
     @OneToMany(mappedBy = "vehicule")
+    @JsonManagedReference("vehicule-maintenances")
     private List<Maintenance> maintenances = new ArrayList<>();
 
     @ManyToMany
