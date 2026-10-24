@@ -27,6 +27,6 @@ public class Maintenance {
 
     @ManyToOne
     @JoinColumn(name = "id_vehicule")
-    @JsonBackReference("vehicule-reservations")
+    @JsonBackReference("vehicule-maintenances")
     private Vehicule vehicule;
 }
