@@ -30,8 +30,9 @@ public class Contrat {
     @OneToOne(mappedBy = "contrat")
     private Reservation reservation;
 
-    @OneToMany(mappedBy = "contrat")
+    @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("contrat-paiements")
-
     private List<Paiement> paiements = new ArrayList<>();
+
+
 }

@@ -30,7 +30,7 @@ public class Paiement {
     private ModePaiement modePaiement;
 
     @ManyToOne
-    @JsonBackReference("contrat-paiements")
     @JoinColumn(name = "id_contrat")
+    @JsonBackReference("contrat-paiements")
     private Contrat contrat;
 }

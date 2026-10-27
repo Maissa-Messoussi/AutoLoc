@@ -1,0 +1,60 @@
+package tn.esprit.tpautoloc.web.controller;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.tpautoloc.domain.Equipement;
+import tn.esprit.tpautoloc.service.IEquipementService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/equipements")
+@RequiredArgsConstructor
+@Tag(name = "Equipements", description = "Gestion des equipements")
+public class EquipementController {
+
+    private final IEquipementService equipementService;
+
+    @Operation(summary = "Lister les equipements")
+    @GetMapping
+    public List<Equipement> findAll() {
+        return equipementService.findAll();
+    }
+
+    @Operation(summary = "Consulter un equipement")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Equipement trouve"),
+            @ApiResponse(responseCode = "404", description = "Equipement introuvable")
+    })
+    @GetMapping("/{id}")
+    public Equipement findById(@Parameter(description = "Identifiant") @PathVariable Long id) {
+        return equipementService.findById(id);
+    }
+
+    @Operation(summary = "Creer un equipement")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Equipement create(@RequestBody Equipement equipement) {
+        return equipementService.create(equipement);
+    }
+
+    @Operation(summary = "Modifier un equipement")
+    @PutMapping("/{id}")
+    public Equipement update(@Parameter(description = "Identifiant") @PathVariable Long id,
+                             @RequestBody Equipement equipement) {
+        return equipementService.update(id, equipement);
+    }
+
+    @Operation(summary = "Supprimer un equipement")
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {
+        equipementService.deleteById(id);
+    }
+}

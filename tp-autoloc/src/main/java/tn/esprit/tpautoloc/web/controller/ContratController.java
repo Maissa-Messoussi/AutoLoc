@@ -47,4 +47,27 @@ public class ContratController {
     public Contrat create(@RequestBody Contrat contrat) {
         return contratService.create(contrat);
     }
+
+    @Operation(summary = "Modifier un contrat")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contrat modifie"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Contrat introuvable")
+    })
+    @PutMapping("/{id}")
+    public Contrat update(@Parameter(description = "Identifiant") @PathVariable Long id,
+                          @RequestBody Contrat contrat) {
+        return contratService.update(id, contrat);
+    }
+
+    @Operation(summary = "Supprimer un contrat")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Contrat supprime"),
+            @ApiResponse(responseCode = "404", description = "Contrat introuvable")
+    })
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {
+        contratService.deleteById(id);
+    }
 }

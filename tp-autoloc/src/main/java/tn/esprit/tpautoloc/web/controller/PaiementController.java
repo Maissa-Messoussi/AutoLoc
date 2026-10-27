@@ -2,10 +2,8 @@ package tn.esprit.tpautoloc.web.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import tn.esprit.tpautoloc.domain.Paiement;
@@ -31,6 +29,14 @@ public class PaiementController {
         return paiementService.findAll();
     }
 
+    @Operation(summary = "Creer un paiement")
+    @ApiResponse(responseCode = "201", description = "Paiement cree")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Paiement create(@RequestBody Paiement paiement) {
+        return paiementService.create(paiement);
+    }
+
     @Operation(summary = "Consulter un paiement")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Paiement trouve"),
@@ -39,5 +45,28 @@ public class PaiementController {
     @GetMapping("/{id}")
     public Paiement findById(@Parameter(description = "Identifiant") @PathVariable Long id) {
         return paiementService.findById(id);
+    }
+
+    @Operation(summary = "Modifier un paiement")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Paiement modifie"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Paiement introuvable")
+    })
+    @PutMapping("/{id}")
+    public Paiement update(@Parameter(description = "Identifiant") @PathVariable Long id,
+                           @RequestBody Paiement paiement) {
+        return paiementService.update(id, paiement);
+    }
+
+    @Operation(summary = "Supprimer un paiement")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Paiement supprime"),
+            @ApiResponse(responseCode = "404", description = "Paiement introuvable")
+    })
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {
+        paiementService.deleteById(id);
     }
 }
