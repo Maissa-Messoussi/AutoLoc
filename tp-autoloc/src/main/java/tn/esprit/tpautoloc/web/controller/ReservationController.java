@@ -22,6 +22,7 @@ public class ReservationController {
     private final IReservationService reservationService;
 
     @Operation(summary = "Lister les reservations")
+    @ApiResponse(responseCode = "200", description = "Liste des reservations")
     @GetMapping
     public List<Reservation> findAll() {
         return reservationService.findAll();
@@ -38,6 +39,10 @@ public class ReservationController {
     }
 
     @Operation(summary = "Creer une reservation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Reservation creee"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Reservation create(@RequestBody Reservation reservation) {
@@ -45,6 +50,11 @@ public class ReservationController {
     }
 
     @Operation(summary = "Modifier une reservation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reservation modifiee"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Reservation introuvable")
+    })
     @PutMapping("/{id}")
     public Reservation update(@Parameter(description = "Identifiant") @PathVariable Long id,
                               @RequestBody Reservation reservation) {
@@ -52,6 +62,10 @@ public class ReservationController {
     }
 
     @Operation(summary = "Supprimer une reservation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Reservation supprimee"),
+            @ApiResponse(responseCode = "404", description = "Reservation introuvable")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {

@@ -30,7 +30,10 @@ public class PaiementController {
     }
 
     @Operation(summary = "Creer un paiement")
-    @ApiResponse(responseCode = "201", description = "Paiement cree")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Paiement cree"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Paiement create(@RequestBody Paiement paiement) {

@@ -22,6 +22,7 @@ public class MaintenanceController {
     private final IMaintenanceService maintenanceService;
 
     @Operation(summary = "Lister les maintenances")
+    @ApiResponse(responseCode = "200", description = "Liste des maintenances")
     @GetMapping
     public List<Maintenance> findAll() {
         return maintenanceService.findAll();
@@ -38,6 +39,10 @@ public class MaintenanceController {
     }
 
     @Operation(summary = "Creer une maintenance")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Maintenance creee"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Maintenance create(@RequestBody Maintenance maintenance) {
@@ -45,6 +50,11 @@ public class MaintenanceController {
     }
 
     @Operation(summary = "Modifier une maintenance")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Maintenance modifiee"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Maintenance introuvable")
+    })
     @PutMapping("/{id}")
     public Maintenance update(@Parameter(description = "Identifiant") @PathVariable Long id,
                               @RequestBody Maintenance maintenance) {
@@ -52,6 +62,10 @@ public class MaintenanceController {
     }
 
     @Operation(summary = "Supprimer une maintenance")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Maintenance supprimee"),
+            @ApiResponse(responseCode = "404", description = "Maintenance introuvable")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {

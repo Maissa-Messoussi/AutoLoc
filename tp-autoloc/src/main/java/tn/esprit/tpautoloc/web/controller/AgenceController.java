@@ -22,6 +22,7 @@ public class AgenceController {
     private final IAgenceService agenceService;
 
     @Operation(summary = "Lister les agences")
+    @ApiResponse(responseCode = "200", description = "Liste des agences")
     @GetMapping
     public List<Agence> findAll() {
         return agenceService.findAll();
@@ -38,6 +39,10 @@ public class AgenceController {
     }
 
     @Operation(summary = "Creer une agence")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Agence creee"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Agence create(@RequestBody Agence agence) {
@@ -45,6 +50,11 @@ public class AgenceController {
     }
 
     @Operation(summary = "Modifier une agence")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Agence modifiee"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Agence introuvable")
+    })
     @PutMapping("/{id}")
     public Agence update(@Parameter(description = "Identifiant") @PathVariable Long id,
                          @RequestBody Agence agence) {
@@ -52,6 +62,10 @@ public class AgenceController {
     }
 
     @Operation(summary = "Supprimer une agence")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Agence supprimee"),
+            @ApiResponse(responseCode = "404", description = "Agence introuvable")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {

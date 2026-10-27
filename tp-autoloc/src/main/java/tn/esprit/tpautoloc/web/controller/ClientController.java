@@ -22,6 +22,7 @@ public class ClientController {
     private final IClientService clientService;
 
     @Operation(summary = "Lister les clients")
+    @ApiResponse(responseCode = "200", description = "Liste des clients")
     @GetMapping
     public List<Client> findAll() {
         return clientService.findAll();
@@ -38,6 +39,10 @@ public class ClientController {
     }
 
     @Operation(summary = "Creer un client")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Client cree"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Client create(@RequestBody Client client) {
@@ -45,6 +50,11 @@ public class ClientController {
     }
 
     @Operation(summary = "Modifier un client")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Client modifie"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Client introuvable")
+    })
     @PutMapping("/{id}")
     public Client update(@Parameter(description = "Identifiant") @PathVariable Long id,
                          @RequestBody Client client) {
@@ -52,6 +62,10 @@ public class ClientController {
     }
 
     @Operation(summary = "Supprimer un client")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Client supprime"),
+            @ApiResponse(responseCode = "404", description = "Client introuvable")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {

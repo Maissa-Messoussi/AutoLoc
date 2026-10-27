@@ -22,6 +22,7 @@ public class EmployeController {
     private final IEmployeService employeService;
 
     @Operation(summary = "Lister les employes")
+    @ApiResponse(responseCode = "200", description = "Liste des employes")
     @GetMapping
     public List<Employe> findAll() {
         return employeService.findAll();
@@ -38,6 +39,10 @@ public class EmployeController {
     }
 
     @Operation(summary = "Creer un employe")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Employe cree"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Employe create(@RequestBody Employe employe) {
@@ -45,6 +50,11 @@ public class EmployeController {
     }
 
     @Operation(summary = "Modifier un employe")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Employe modifie"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Employe introuvable")
+    })
     @PutMapping("/{id}")
     public Employe update(@Parameter(description = "Identifiant") @PathVariable Long id,
                           @RequestBody Employe employe) {
@@ -52,6 +62,10 @@ public class EmployeController {
     }
 
     @Operation(summary = "Supprimer un employe")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Employe supprime"),
+            @ApiResponse(responseCode = "404", description = "Employe introuvable")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {

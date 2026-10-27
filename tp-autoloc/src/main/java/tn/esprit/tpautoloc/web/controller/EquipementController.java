@@ -22,6 +22,7 @@ public class EquipementController {
     private final IEquipementService equipementService;
 
     @Operation(summary = "Lister les equipements")
+    @ApiResponse(responseCode = "200", description = "Liste des equipements")
     @GetMapping
     public List<Equipement> findAll() {
         return equipementService.findAll();
@@ -38,6 +39,10 @@ public class EquipementController {
     }
 
     @Operation(summary = "Creer un equipement")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Equipement cree"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Equipement create(@RequestBody Equipement equipement) {
@@ -45,6 +50,11 @@ public class EquipementController {
     }
 
     @Operation(summary = "Modifier un equipement")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Equipement modifie"),
+            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
+            @ApiResponse(responseCode = "404", description = "Equipement introuvable")
+    })
     @PutMapping("/{id}")
     public Equipement update(@Parameter(description = "Identifiant") @PathVariable Long id,
                              @RequestBody Equipement equipement) {
@@ -52,6 +62,10 @@ public class EquipementController {
     }
 
     @Operation(summary = "Supprimer un equipement")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Equipement supprime"),
+            @ApiResponse(responseCode = "404", description = "Equipement introuvable")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {
