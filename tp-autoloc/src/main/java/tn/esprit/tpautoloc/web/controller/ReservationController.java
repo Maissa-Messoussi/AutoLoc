@@ -61,6 +61,16 @@ public class ReservationController {
         return reservationService.update(id, reservation);
     }
 
+    @Operation(summary = "Annuler une reservation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reservation annulee"),
+            @ApiResponse(responseCode = "404", description = "Reservation introuvable")
+    })
+    @PatchMapping("/{id}/annuler")
+    public Reservation annuler(@Parameter(description = "Identifiant") @PathVariable Long id) {
+        return reservationService.annulerReservation(id);
+    }
+
     @Operation(summary = "Supprimer une reservation")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Reservation supprimee"),
