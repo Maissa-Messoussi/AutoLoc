@@ -1,8 +1,11 @@
 package tn.esprit.tpautoloc.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tn.esprit.tpautoloc.domain.Client;
 import tn.esprit.tpautoloc.domain.Reservation;
 import tn.esprit.tpautoloc.domain.enums.StatutReservation;
 import tn.esprit.tpautoloc.exception.ResourceNotFoundException;
@@ -10,6 +13,7 @@ import tn.esprit.tpautoloc.repository.IReservationRepository;
 import tn.esprit.tpautoloc.service.IReservationService;
 import tn.esprit.tpautoloc.service.observer.ReservationSubject;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements IReservationService {
@@ -93,4 +97,16 @@ public class ReservationServiceImpl implements IReservationService {
     public void deleteById(Long id) {
         reservationRepository.delete(findById(id));
     }
-}
+
+    // ===== Ajouts Atelier 6 (Observer) =====
+
+    @Override
+    public Reservation creerReservation(Client client) {
+        Reservation reservation = Reservation.builder()
+                .client(client)
+                .dateDebut(LocalDate.now())
+                .statut(StatutReservation.CONFIRMEE)
+                .build();
+    }
+
+        // Déclenche le process métier via le pattern Observer

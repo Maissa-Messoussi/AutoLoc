@@ -61,6 +61,20 @@ public class EmployeController {
         return employeService.update(id, employe);
     }
 
+    @Operation(summary = "Affecter un employe a une agence")
+    @PutMapping("/{employeId}/agence/{agenceId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void affecterAAgence(@PathVariable Long employeId, @PathVariable Long agenceId) {
+        employeService.affecterEmployeAAgence(employeId, agenceId);
+    }
+
+    @Operation(summary = "Desaffecter un employe de son agence")
+    @PutMapping("/{employeId}/desaffecter-agence")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void desaffecterDeAgence(@PathVariable Long employeId) {
+        employeService.desaffecterEmployeDeAgence(employeId);
+    }
+
     @Operation(summary = "Supprimer un employe")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Employe supprime"),

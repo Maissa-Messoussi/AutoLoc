@@ -2,9 +2,12 @@ package tn.esprit.tpautoloc.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import tn.esprit.tpautoloc.domain.Agence;
 import tn.esprit.tpautoloc.domain.Employe;
 import tn.esprit.tpautoloc.exception.ResourceNotFoundException;
+import tn.esprit.tpautoloc.repository.IAgenceRepository;
 import tn.esprit.tpautoloc.repository.IEmployeRepository;
 import tn.esprit.tpautoloc.service.IEmployeService;
 
@@ -13,6 +16,7 @@ import tn.esprit.tpautoloc.service.IEmployeService;
 public class EmployeServiceImpl implements IEmployeService {
 
     private final IEmployeRepository employeRepository;
+    private final IAgenceRepository agenceRepository;
 
     private void valider(Employe employe) {
         if (employe.getNom() == null || employe.getNom().isBlank()) {
@@ -55,5 +59,30 @@ public class EmployeServiceImpl implements IEmployeService {
     @Override
     public void deleteById(Long id) {
         employeRepository.delete(findById(id));
+    }
+
+    @Override
+    @Transactional
+    public void affecterEmployeAAgence(Long employeId, Long agenceId) {
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employé", employeId));
+        Agence agence = agenceRepository.findById(agenceId)
+                .orElseThrow(() -> new ResourceNotFoundException("Agence", agenceId));
+
+        employe.setAgence(agence);
+        employeRepository.save(employe);
+    }
+
+    @Override
+    @Transactional
+    public void desaffecterEmployeDeAgence(Long employeId) {
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employé", employeId));
+        if (employe.getAgence() == null) {
+            throw new IllegalArgumentException("L'employé n'est rattaché à aucune agence");
+        }
+
+        employe.setAgence(null);
+        employeRepository.save(employe);
     }
 }

@@ -61,6 +61,20 @@ public class VehiculeController {
         return vehiculeService.update(id, vehicule);
     }
 
+    @Operation(summary = "Affecter un vehicule a une agence")
+    @PutMapping("/{vehiculeId}/agence/{agenceId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void affecterAAgence(@PathVariable Long vehiculeId, @PathVariable Long agenceId) {
+        vehiculeService.affecterVehiculeAAgence(vehiculeId, agenceId);
+    }
+
+    @Operation(summary = "Desaffecter un vehicule de son agence")
+    @PutMapping("/{vehiculeId}/desaffecter-agence")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void desaffecterDeAgence(@PathVariable Long vehiculeId) {
+        vehiculeService.desaffecterVehiculeDeAgence(vehiculeId);
+    }
+
     @Operation(summary = "Supprimer un vehicule")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Vehicule supprime"),
