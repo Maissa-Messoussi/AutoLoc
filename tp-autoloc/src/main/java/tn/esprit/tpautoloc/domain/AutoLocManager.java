@@ -1,20 +1,25 @@
 package tn.esprit.tpautoloc.domain;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AutoLocManager {
 
-    public void louerVehicule( String typeVehicule,int nombreJours,String clientEmail) {
+    private static final String LONGUE_DUREE = "LongDuree";
+    private static final String WEEKEND = "Weekend";
+    private static final String STANDARD = "Standard";
+
+    public void louerVehicule(String typeVehicule, int nombreJours, String clientEmail) {
         double prix = 0;
-        if(typeVehicule.equals("LongDuree")) {
-            prix = nombreJours * 120;
+        if (LONGUE_DUREE.equals(typeVehicule)) {
+            prix = nombreJours * 120.0;
+        } else if (WEEKEND.equals(typeVehicule)) {
+            prix = nombreJours * 180.0;
+        } else if (STANDARD.equals(typeVehicule)) {
+            prix = nombreJours * 150.0;
         }
-        else if(typeVehicule.equals("Weekend")) {
-            prix = nombreJours * 180;
-        }
-        else if(typeVehicule.equals("Standard")) {
-            prix = nombreJours * 150;
-        }
-        System.out.println(  "Contrat créé"  );
-        System.out.println(  "Prix total : " + prix );
+        log.info("Contrat créé");
+        log.info("Prix total : {}", prix);
 
         envoyerEmail(clientEmail);
         enregistrerPaiement();
@@ -22,18 +27,14 @@ public class AutoLocManager {
     }
 
     private void enregistrerPaiement() {
+        // Volontairement vide : l'enregistrement du paiement n'est pas encore implémenté
     }
 
-    private void envoyerEmail(String email){
-        System.out.println(  "Email envoyé à " + email  );
+    private void envoyerEmail(String email) {
+        log.info("Email envoyé à {}", email);
     }
 
-    private void envoyerSMS(String sms){
-        System.out.println(  "SMS envoyé à " + sms  );
+    private void sauvegarderContrat() {
+        log.info("Contrat sauvegardé");
     }
-
-    private void sauvegarderContrat(){
-        System.out.println(  "Contrat sauvegardé"    );
-    }
-
-} 
+}

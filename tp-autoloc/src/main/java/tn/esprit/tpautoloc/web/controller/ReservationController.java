@@ -3,13 +3,14 @@ package tn.esprit.tpautoloc.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.tpautoloc.domain.Reservation;
 import tn.esprit.tpautoloc.service.IReservationService;
+import tn.esprit.tpautoloc.web.dto.ReservationRequestDTO;
+import tn.esprit.tpautoloc.web.dto.ReservationResponseDTO;
 
 import java.util.List;
 
@@ -24,61 +25,55 @@ public class ReservationController {
     @Operation(summary = "Lister les reservations")
     @ApiResponse(responseCode = "200", description = "Liste des reservations")
     @GetMapping
-    public List<Reservation> findAll() {
-        return reservationService.findAll();
+    public ResponseEntity<List<ReservationResponseDTO>> findAll() {
+        return ResponseEntity.ok(reservationService.findAll());
     }
 
     @Operation(summary = "Consulter une reservation")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Reservation trouvee"),
-            @ApiResponse(responseCode = "404", description = "Reservation introuvable")
-    })
+    @ApiResponse(responseCode = "200", description = "Reservation trouvee")
+    @ApiResponse(responseCode = "404", description = "Reservation introuvable")
     @GetMapping("/{id}")
-    public Reservation findById(@Parameter(description = "Identifiant") @PathVariable Long id) {
-        return reservationService.findById(id);
+    public ResponseEntity<ReservationResponseDTO> findById(
+            @Parameter(description = "Identifiant") @PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.findById(id));
     }
 
     @Operation(summary = "Creer une reservation")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Reservation creee"),
-            @ApiResponse(responseCode = "400", description = "Donnees invalides")
-    })
+    @ApiResponse(responseCode = "201", description = "Reservation creee")
+    @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Reservation create(@RequestBody Reservation reservation) {
-        return reservationService.create(reservation);
+    public ResponseEntity<ReservationResponseDTO> creer(@RequestBody ReservationRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservationService.creer(dto));
     }
 
     @Operation(summary = "Modifier une reservation")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Reservation modifiee"),
-            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
-            @ApiResponse(responseCode = "404", description = "Reservation introuvable")
-    })
+    @ApiResponse(responseCode = "200", description = "Reservation modifiee")
+    @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    @ApiResponse(responseCode = "404", description = "Reservation introuvable")
     @PutMapping("/{id}")
-    public Reservation update(@Parameter(description = "Identifiant") @PathVariable Long id,
-                              @RequestBody Reservation reservation) {
-        return reservationService.update(id, reservation);
+    public ResponseEntity<ReservationResponseDTO> update(
+            @Parameter(description = "Identifiant") @PathVariable Long id,
+            @RequestBody ReservationRequestDTO dto) {
+        return ResponseEntity.ok(reservationService.update(id, dto));
     }
 
     @Operation(summary = "Annuler une reservation")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Reservation annulee"),
-            @ApiResponse(responseCode = "404", description = "Reservation introuvable")
-    })
+    @ApiResponse(responseCode = "200", description = "Reservation annulee")
+    @ApiResponse(responseCode = "404", description = "Reservation introuvable")
     @PatchMapping("/{id}/annuler")
-    public Reservation annuler(@Parameter(description = "Identifiant") @PathVariable Long id) {
-        return reservationService.annulerReservation(id);
+    public ResponseEntity<ReservationResponseDTO> annuler(
+            @Parameter(description = "Identifiant") @PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.annulerReservation(id));
     }
 
     @Operation(summary = "Supprimer une reservation")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Reservation supprimee"),
-            @ApiResponse(responseCode = "404", description = "Reservation introuvable")
-    })
+    @ApiResponse(responseCode = "204", description = "Reservation supprimee")
+    @ApiResponse(responseCode = "404", description = "Reservation introuvable")
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "Identifiant") @PathVariable Long id) {
         reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

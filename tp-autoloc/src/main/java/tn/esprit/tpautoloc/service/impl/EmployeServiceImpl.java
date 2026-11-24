@@ -2,8 +2,8 @@ package tn.esprit.tpautoloc.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.tpautoloc.domain.Agence;
 import tn.esprit.tpautoloc.domain.Employe;
 import tn.esprit.tpautoloc.exception.ResourceNotFoundException;
@@ -14,6 +14,9 @@ import tn.esprit.tpautoloc.service.IEmployeService;
 @Service
 @RequiredArgsConstructor
 public class EmployeServiceImpl implements IEmployeService {
+
+    private static final String EMPLOYE = "Employé";
+    private static final String AGENCE = "Agence";
 
     private final IEmployeRepository employeRepository;
     private final IAgenceRepository agenceRepository;
@@ -36,7 +39,7 @@ public class EmployeServiceImpl implements IEmployeService {
     @Override
     public Employe findById(Long id) {
         return employeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Employé", id));
+                .orElseThrow(() -> new ResourceNotFoundException(EMPLOYE, id));
     }
 
     @Override
@@ -64,10 +67,9 @@ public class EmployeServiceImpl implements IEmployeService {
     @Override
     @Transactional
     public void affecterEmployeAAgence(Long employeId, Long agenceId) {
-        Employe employe = employeRepository.findById(employeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employé", employeId));
+        Employe employe = findById(employeId);
         Agence agence = agenceRepository.findById(agenceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Agence", agenceId));
+                .orElseThrow(() -> new ResourceNotFoundException(AGENCE, agenceId));
 
         employe.setAgence(agence);
         employeRepository.save(employe);
@@ -76,8 +78,7 @@ public class EmployeServiceImpl implements IEmployeService {
     @Override
     @Transactional
     public void desaffecterEmployeDeAgence(Long employeId) {
-        Employe employe = employeRepository.findById(employeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employé", employeId));
+        Employe employe = findById(employeId);
         if (employe.getAgence() == null) {
             throw new IllegalArgumentException("L'employé n'est rattaché à aucune agence");
         }

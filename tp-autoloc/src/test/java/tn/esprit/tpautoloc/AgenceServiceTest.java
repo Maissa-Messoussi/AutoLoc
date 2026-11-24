@@ -1,12 +1,10 @@
-
 package tn.esprit.tpautoloc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import tn.esprit.tpautoloc.domain.Agence;
 import tn.esprit.tpautoloc.service.IAgenceService;
+import tn.esprit.tpautoloc.web.dto.AgenceDTO;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,46 +16,37 @@ class AgenceServiceTest {
 
     @Test
     void testAgenceService() {
-
         // 1. Créer une agence
-        Agence agence = new Agence();
-        agence.setNom("AgenceTest");
-        agence.setVille("Tunis");
-        agence.setAdresse("Centre-ville");
-        agence.setTelephone("71222333");
+        AgenceDTO dto = AgenceDTO.builder()
+                .nom("AgenceTest")
+                .ville("Tunis")
+                .adresse("Centre-ville")
+                .telephone("71222333")
+                .build();
 
         // 2. Enregistrer l'agence
-        Agence agenceEnregistree = agenceService.create(agence);
+        AgenceDTO enregistree = agenceService.creer(dto);
+        assertNotNull(enregistree);
+        assertNotNull(enregistree.getId());
+        System.out.println("Agence créée : " + enregistree.getNom());
 
-        assertNotNull(agenceEnregistree);
-        assertNotNull(agenceEnregistree.getIdAgence());
-
-        System.out.println("Agence créée : " + agenceEnregistree);
-
-        Long id = agenceEnregistree.getIdAgence();
+        Long id = enregistree.getId();
 
         // 3. Afficher toutes les agences
-        System.out.println("Liste des agences :");
-        agenceService.findAll().forEach(System.out::println);
+        agenceService.findAll().forEach(a -> System.out.println(a.getNom()));
 
-        // 4. Rechercher une agence par son ID
-        Agence agenceTrouvee = agenceService.findById(id);
+        // 4. Rechercher par ID
+        AgenceDTO trouvee = agenceService.findById(id);
+        assertNotNull(trouvee);
+        assertEquals("AgenceTest", trouvee.getNom());
 
-        assertNotNull(agenceTrouvee);
-        System.out.println("Agence recherchée : " + agenceTrouvee);
+        // 5. Nombre d'agences
+        System.out.println("Nombre d'agences : " + agenceService.findAll().size());
 
-        // 5. Afficher le nombre d'agences
-        System.out.println("Nombre d'agences : " + agenceService.count());
-
-        // 6. Supprimer l'agence
+        // 6. Supprimer
         agenceService.deleteById(id);
 
         // 7. Vérifier que l'agence n'existe plus
-        assertThrows(
-                RuntimeException.class,
-                () -> agenceService.findById(id)
-        );
-
-        System.out.println("Agence supprimée avec succès !");
+        assertThrows(RuntimeException.class, () -> agenceService.findById(id));
     }
 }

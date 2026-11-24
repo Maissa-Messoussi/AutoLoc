@@ -7,14 +7,19 @@ import tn.esprit.tpautoloc.service.strategy.ITarificationStrategy;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
 public class TarificationStrategyFactory {
     private static final long DUREE_LONGUE_MINIMALE = 7;
+    private static final Set<DayOfWeek> JOURS_WEEKEND =
+            EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
+
     private final Map<String, ITarificationStrategy> strategies;
 
     public TarificationStrategyFactory(List<ITarificationStrategy> strategyList) {
@@ -44,12 +49,7 @@ public class TarificationStrategyFactory {
                     "La date de fin doit être postérieure à la date de début");
         }
 
-        String code = estWeekend(reservation)
-                ? "WEEKEND"
-                : ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin())
-                >= DUREE_LONGUE_MINIMALE
-                ? "LONGUE_DUREE"
-                : "STANDARD";
+        String code = determinerCode(reservation);
 
         ITarificationStrategy strategy = strategies.get(code);
         if (strategy == null) {
@@ -58,11 +58,22 @@ public class TarificationStrategyFactory {
         return strategy;
     }
 
+    private String determinerCode(Reservation reservation) {
+        if (estWeekend(reservation)) {
+            return "WEEKEND";
+        }
+        long duree = ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin());
+        if (duree >= DUREE_LONGUE_MINIMALE) {
+            return "LONGUE_DUREE";
+        }
+        return "STANDARD";
+    }
+
     private boolean estWeekend(Reservation reservation) {
         LocalDate date = reservation.getDateDebut();
-        while (!date.isAfter(reservation.getDateFin().minusDays(1))) {
-            DayOfWeek jour = date.getDayOfWeek();
-            if (jour == DayOfWeek.SATURDAY || jour == DayOfWeek.SUNDAY) {
+        LocalDate dernierJour = reservation.getDateFin().minusDays(1);
+        while (!date.isAfter(dernierJour)) {
+            if (JOURS_WEEKEND.contains(date.getDayOfWeek())) {
                 return true;
             }
             date = date.plusDays(1);

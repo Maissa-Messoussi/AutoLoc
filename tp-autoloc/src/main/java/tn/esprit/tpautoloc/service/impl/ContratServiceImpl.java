@@ -3,55 +3,75 @@ package tn.esprit.tpautoloc.service.impl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.tpautoloc.domain.Contrat;
+import tn.esprit.tpautoloc.domain.Reservation;
 import tn.esprit.tpautoloc.exception.ResourceNotFoundException;
 import tn.esprit.tpautoloc.repository.IContratRepository;
+import tn.esprit.tpautoloc.repository.IReservationRepository;
 import tn.esprit.tpautoloc.service.IContratService;
+import tn.esprit.tpautoloc.web.dto.ContratDTO;
+import tn.esprit.tpautoloc.web.mapper.ContratMapper;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ContratServiceImpl implements IContratService {
+
     private final IContratRepository contratRepository;
+    private final IReservationRepository reservationRepository;
+    private final ContratMapper contratMapper;
+
     @Override
-    public Contrat create(Contrat contrat) {
-        if (contrat.getIdContrat() != null) {
-            throw new IllegalArgumentException(
-                    "Un nouveau contrat ne doit pas avoir d'identifiant");
-        }
-        if (contrat.getPaiements() != null) {
-            contrat.getPaiements().forEach(p -> p.setContrat(contrat));
-        }
-        return contratRepository.save(contrat);
+    public ContratDTO creer(ContratDTO dto) {
+        Contrat saved = contratRepository.save(contratMapper.toEntity(dto));
+        lierReservation(saved, dto);
+        return contratMapper.toDto(saved);
     }
 
     @Override
-    public Contrat findById(Long id) {
-        return contratRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Contrat", id));
+    @Transactional(readOnly = true)
+    public ContratDTO findById(Long id) {
+        return contratMapper.toDto(getOrThrow(id));
     }
-    @Override
-    public List<Contrat> findAll() {
-        return contratRepository.findAll();
-    }
-    @Override
-    public Contrat update(Long id, Contrat contrat) {
-        Contrat existant = findById(id);
 
-        existant.setDateSignature(contrat.getDateSignature());
-        existant.setMontantTotal(contrat.getMontantTotal());
-        if (contrat.getValide() != null) {
-            existant.setValide(contrat.getValide());
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContratDTO> findAll() {
+        return contratRepository.findAll().stream().map(contratMapper::toDto).toList();
+    }
+
+    @Override
+    public ContratDTO update(Long id, ContratDTO dto) {
+        Contrat existant = getOrThrow(id);
+        Contrat donnees = contratMapper.toEntity(dto);
+
+        existant.setDateSignature(donnees.getDateSignature());
+        existant.setMontantTotal(donnees.getMontantTotal());
+        if (donnees.getValide() != null) {
+            existant.setValide(donnees.getValide());
         }
-
-        return contratRepository.save(existant);
+        lierReservation(existant, dto);
+        return contratMapper.toDto(contratRepository.save(existant));
     }
 
     @Override
     public void deleteById(Long id) {
-        if (!contratRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Contrat", id);
+        contratRepository.delete(getOrThrow(id));
+    }
+
+    private void lierReservation(Contrat contrat, ContratDTO dto) {
+        if (dto.getReservationId() != null) {
+            Reservation reservation = reservationRepository.findById(dto.getReservationId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Réservation", dto.getReservationId()));
+            contrat.setReservation(reservation);
+            // Reservation porte la clé étrangère (côté propriétaire) : c'est ce côté qui est persisté
+            reservation.setContrat(contrat);
         }
-        contratRepository.deleteById(id);
+    }
+
+    private Contrat getOrThrow(Long id) {
+        return contratRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Contrat", id));
     }
 }
-

@@ -1,28 +1,26 @@
-
 package tn.esprit.tpautoloc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import tn.esprit.tpautoloc.domain.Agence;
-import tn.esprit.tpautoloc.domain.Client;
-import tn.esprit.tpautoloc.service.IAgenceService;
-import tn.esprit.tpautoloc.service.IClientService;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import tn.esprit.tpautoloc.domain.Vehicule;
 import tn.esprit.tpautoloc.domain.Equipement;
 import tn.esprit.tpautoloc.domain.Maintenance;
 import tn.esprit.tpautoloc.domain.enums.CategorieVehicule;
 import tn.esprit.tpautoloc.domain.enums.StatutVehicule;
-import tn.esprit.tpautoloc.service.IVehiculeService;
+import tn.esprit.tpautoloc.service.IAgenceService;
+import tn.esprit.tpautoloc.service.IClientService;
 import tn.esprit.tpautoloc.service.IEquipementService;
 import tn.esprit.tpautoloc.service.IMaintenanceService;
+import tn.esprit.tpautoloc.service.IVehiculeService;
+import tn.esprit.tpautoloc.web.dto.AgenceDTO;
+import tn.esprit.tpautoloc.web.dto.ClientDTO;
+import tn.esprit.tpautoloc.web.dto.VehiculeDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ServiceTest {
@@ -44,130 +42,82 @@ class ServiceTest {
 
     @Test
     void testAgenceService() {
-        // 1. Créer une agence
-        Agence agence = new Agence();
-        agence.setNom("AgenceTest");
-        agence.setVille("Tunis");
-        agence.setAdresse("Centre-ville");
-        agence.setTelephone("71222333");
+        AgenceDTO dto = AgenceDTO.builder()
+                .nom("AgenceTest").ville("Tunis")
+                .adresse("Centre-ville").telephone("71222333")
+                .build();
 
-        // 2. Enregistrer l'agence
-        Agence saved = agenceService.create(agence);
+        AgenceDTO saved = agenceService.creer(dto);
         assertNotNull(saved);
-        assertNotNull(saved.getIdAgence());
+        assertNotNull(saved.getId());
 
-        System.out.println("Agence créée : " + saved);
+        System.out.println("Toutes les agences : " + agenceService.findAll().size());
 
-        // 3. Afficher toutes les agences
-        System.out.println("Toutes les agences : "
-                + agenceService.findAll());
-
-        // 4. Rechercher l'agence
-        Agence found = agenceService.findById(saved.getIdAgence());
+        AgenceDTO found = agenceService.findById(saved.getId());
         assertNotNull(found);
         assertEquals("AgenceTest", found.getNom());
 
-        System.out.println("Agence recherchée : " + found);
-
-        // 5. Afficher le nombre d'agences
-        System.out.println("Nombre d'agences : "
-                + agenceService.findAll().size());
-
-        // 6. Supprimer et vérifier
-        Long id = saved.getIdAgence();
+        Long id = saved.getId();
         agenceService.deleteById(id);
-
-        assertThrows(RuntimeException.class,
-                () -> agenceService.findById(id));
-
-        System.out.println("Agence supprimée avec succès !");
+        assertThrows(RuntimeException.class, () -> agenceService.findById(id));
     }
 
     @Test
     void testClientService() {
-        // 1. Créer deux clients
-        Client client1 = new Client();
-        client1.setNom("Ben Ali");
-        client1.setPrenom("Amine");
-        client1.setEmail("amine.test@example.com");
-        client1.setTelephone("20111222");
-        client1.setNumPermis("PERMIS-TEST-001");
+        ClientDTO client1 = ClientDTO.builder()
+                .nom("Ben Ali").prenom("Amine")
+                .email("amine.service@example.com")
+                .telephone("20111222").numPermis("PERMIS-SRV-001")
+                .build();
 
-        Client client2 = new Client();
-        client2.setNom("Trabelsi");
-        client2.setPrenom("Sarra");
-        client2.setEmail("sarra.test@example.com");
-        client2.setTelephone("22111222");
-        client2.setNumPermis("PERMIS-TEST-002");
+        ClientDTO client2 = ClientDTO.builder()
+                .nom("Trabelsi").prenom("Sarra")
+                .email("sarra.service@example.com")
+                .telephone("22111222").numPermis("PERMIS-SRV-002")
+                .build();
 
-        // 2. Enregistrer les clients
-        Client saved1 = clientService.create(client1);
-        Client saved2 = clientService.create(client2);
+        ClientDTO saved1 = clientService.creer(client1);
+        ClientDTO saved2 = clientService.creer(client2);
 
-        assertNotNull(saved1.getIdClient());
-        assertNotNull(saved2.getIdClient());
+        assertNotNull(saved1.getId());
+        assertNotNull(saved2.getId());
 
-        // 3. Afficher tous les clients
-        System.out.println("Tous les clients : "
-                + clientService.findAll());
-
-        // 4. Rechercher un client
-        Client found = clientService.findById(saved1.getIdClient());
+        ClientDTO found = clientService.findById(saved1.getId());
         assertNotNull(found);
 
-        System.out.println("Client recherché : " + found);
+        System.out.println("Nombre de clients : " + clientService.findAll().size());
 
-        // 5. Afficher le nombre de clients
-        System.out.println("Nombre de clients : "
-                + clientService.findAll().size());
-
-        // 6. Supprimer un client et vérifier
-        Long id = saved1.getIdClient();
+        Long id = saved1.getId();
         clientService.deleteById(id);
+        assertThrows(RuntimeException.class, () -> clientService.findById(id));
 
-        assertThrows(RuntimeException.class,
-                () -> clientService.findById(id));
-
-        System.out.println("Client supprimé avec succès !");
+        clientService.deleteById(saved2.getId());
     }
-
 
     @Test
     void testVehiculeService() {
-        Vehicule vehicule = new Vehicule();
-        vehicule.setImmatriculation("TEST-123");
-        vehicule.setMarque("Renault");
-        vehicule.setModele("Clio");
-        vehicule.setTarifJournalier(new BigDecimal("80.00"));
+        VehiculeDTO dto = VehiculeDTO.builder()
+                .immatriculation("TEST-123")
+                .marque("Renault")
+                .modele("Clio")
+                .tarifJournalier(new BigDecimal("80.00"))
+                .categorie(CategorieVehicule.CITADINE)
+                .statut(StatutVehicule.DISPONIBLE)
+                .build();
 
-        // Vérifie les noms des constantes dans tes deux enums
-        vehicule.setCategorie(CategorieVehicule.values()[0]);
-        vehicule.setStatut(StatutVehicule.values()[0]);
-
-        Vehicule saved = vehiculeService.create(vehicule);
+        VehiculeDTO saved = vehiculeService.creer(dto);
         assertNotNull(saved);
-        assertNotNull(saved.getIdVehicule());
+        assertNotNull(saved.getId());
 
-        System.out.println("Véhicule créé : " + saved);
-        System.out.println("Tous les véhicules : "
-                + vehiculeService.findAll());
-
-        Vehicule found = vehiculeService.findById(saved.getIdVehicule());
+        VehiculeDTO found = vehiculeService.findById(saved.getId());
         assertNotNull(found);
-        System.out.println("Véhicule recherché : " + found);
 
-        System.out.println("Nombre de véhicules : "
-                + vehiculeService.findAll().size());
+        System.out.println("Nombre de véhicules : " + vehiculeService.findAll().size());
 
-        Long id = saved.getIdVehicule();
+        Long id = saved.getId();
         vehiculeService.deleteById(id);
-
-        assertThrows(RuntimeException.class,
-                () -> vehiculeService.findById(id));
-
-        System.out.println("Véhicule supprimé !");
+        assertThrows(RuntimeException.class, () -> vehiculeService.findById(id));
     }
-
 
     @Test
     void testEquipementService() {
@@ -178,26 +128,15 @@ class ServiceTest {
         assertNotNull(saved);
         assertNotNull(saved.getIdEquipement());
 
-        System.out.println("Équipement créé : " + saved);
-        System.out.println("Tous les équipements : "
-                + equipementService.findAll());
-
-        Equipement found = equipementService.findById(
-                saved.getIdEquipement());
+        Equipement found = equipementService.findById(saved.getIdEquipement());
         assertNotNull(found);
         assertEquals("GPS de test", found.getLibelle());
 
-        System.out.println("Équipement recherché : " + found);
-        System.out.println("Nombre d'équipements : "
-                + equipementService.findAll().size());
+        System.out.println("Nombre d'équipements : " + equipementService.findAll().size());
 
         Long id = saved.getIdEquipement();
         equipementService.deleteById(id);
-
-        assertThrows(RuntimeException.class,
-                () -> equipementService.findById(id));
-
-        System.out.println("Équipement supprimé !");
+        assertThrows(RuntimeException.class, () -> equipementService.findById(id));
     }
 
     @Test
@@ -211,27 +150,13 @@ class ServiceTest {
         assertNotNull(saved);
         assertNotNull(saved.getIdMaintenance());
 
-        System.out.println("Maintenance créée : " + saved);
-        System.out.println("Toutes les maintenances : "
-                + maintenanceService.findAll());
-
-        Maintenance found = maintenanceService.findById(
-                saved.getIdMaintenance());
+        Maintenance found = maintenanceService.findById(saved.getIdMaintenance());
         assertNotNull(found);
-        System.out.println("Maintenance recherchée : " + found);
 
-        System.out.println("Nombre de maintenances : "
-                + maintenanceService.findAll().size());
+        System.out.println("Nombre de maintenances : " + maintenanceService.findAll().size());
 
         Long id = saved.getIdMaintenance();
         maintenanceService.deleteById(id);
-
-        assertThrows(RuntimeException.class,
-                () -> maintenanceService.findById(id));
-
-        System.out.println("Maintenance supprimée !");
+        assertThrows(RuntimeException.class, () -> maintenanceService.findById(id));
     }
-
-
-
 }

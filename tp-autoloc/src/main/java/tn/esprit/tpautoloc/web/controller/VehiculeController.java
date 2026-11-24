@@ -3,13 +3,13 @@ package tn.esprit.tpautoloc.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.tpautoloc.domain.Vehicule;
 import tn.esprit.tpautoloc.service.IVehiculeService;
+import tn.esprit.tpautoloc.web.dto.VehiculeDTO;
 
 import java.util.List;
 
@@ -24,65 +24,65 @@ public class VehiculeController {
     @Operation(summary = "Lister les vehicules")
     @ApiResponse(responseCode = "200", description = "Liste des vehicules")
     @GetMapping
-    public List<Vehicule> findAll() {
-        return vehiculeService.findAll();
+    public ResponseEntity<List<VehiculeDTO>> findAll() {
+        return ResponseEntity.ok(vehiculeService.findAll());
     }
 
     @Operation(summary = "Consulter un vehicule")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Vehicule trouve"),
-            @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
-    })
+    @ApiResponse(responseCode = "200", description = "Vehicule trouve")
+    @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
     @GetMapping("/{id}")
-    public Vehicule findById(@Parameter(description = "Identifiant") @PathVariable Long id) {
-        return vehiculeService.findById(id);
+    public ResponseEntity<VehiculeDTO> findById(
+            @Parameter(description = "Identifiant") @PathVariable Long id) {
+        return ResponseEntity.ok(vehiculeService.findById(id));
     }
 
     @Operation(summary = "Creer un vehicule")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Vehicule cree"),
-            @ApiResponse(responseCode = "400", description = "Donnees invalides")
-    })
+    @ApiResponse(responseCode = "201", description = "Vehicule cree")
+    @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Vehicule create(@RequestBody Vehicule vehicule) {
-        return vehiculeService.create(vehicule);
+    public ResponseEntity<VehiculeDTO> creer(@RequestBody VehiculeDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(vehiculeService.creer(dto));
     }
 
     @Operation(summary = "Modifier un vehicule")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Vehicule modifie"),
-            @ApiResponse(responseCode = "400", description = "Donnees invalides"),
-            @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
-    })
+    @ApiResponse(responseCode = "200", description = "Vehicule modifie")
+    @ApiResponse(responseCode = "400", description = "Donnees invalides")
+    @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
     @PutMapping("/{id}")
-    public Vehicule update(@Parameter(description = "Identifiant") @PathVariable Long id,
-                           @RequestBody Vehicule vehicule) {
-        return vehiculeService.update(id, vehicule);
+    public ResponseEntity<VehiculeDTO> update(
+            @Parameter(description = "Identifiant") @PathVariable Long id,
+            @RequestBody VehiculeDTO dto) {
+        return ResponseEntity.ok(vehiculeService.update(id, dto));
     }
 
     @Operation(summary = "Affecter un vehicule a une agence")
+    @ApiResponse(responseCode = "204", description = "Vehicule affecte")
+    @ApiResponse(responseCode = "404", description = "Vehicule ou agence introuvable")
     @PutMapping("/{vehiculeId}/agence/{agenceId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void affecterAAgence(@PathVariable Long vehiculeId, @PathVariable Long agenceId) {
+    public ResponseEntity<Void> affecterAAgence(@PathVariable Long vehiculeId,
+                                                @PathVariable Long agenceId) {
         vehiculeService.affecterVehiculeAAgence(vehiculeId, agenceId);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Desaffecter un vehicule de son agence")
+    @ApiResponse(responseCode = "204", description = "Vehicule desaffecte")
+    @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
     @PutMapping("/{vehiculeId}/desaffecter-agence")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void desaffecterDeAgence(@PathVariable Long vehiculeId) {
+    public ResponseEntity<Void> desaffecterDeAgence(@PathVariable Long vehiculeId) {
         vehiculeService.desaffecterVehiculeDeAgence(vehiculeId);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Supprimer un vehicule")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Vehicule supprime"),
-            @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
-    })
+    @ApiResponse(responseCode = "204", description = "Vehicule supprime")
+    @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "Identifiant") @PathVariable Long id) {
         vehiculeService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

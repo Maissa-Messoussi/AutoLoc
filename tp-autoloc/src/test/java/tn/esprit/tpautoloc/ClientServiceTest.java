@@ -1,12 +1,10 @@
-
 package tn.esprit.tpautoloc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import tn.esprit.tpautoloc.domain.Client;
 import tn.esprit.tpautoloc.service.IClientService;
+import tn.esprit.tpautoloc.web.dto.ClientDTO;
 
 import java.time.LocalDate;
 
@@ -20,61 +18,45 @@ class ClientServiceTest {
 
     @Test
     void testClientService() {
+        // 1. Créer deux clients
+        ClientDTO client1 = ClientDTO.builder()
+                .nom("Ben Ali").prenom("Ahmed")
+                .email("ahmed.test@example.com")
+                .telephone("20111222").numPermis("PERMIS001")
+                .dateInscription(LocalDate.now())
+                .build();
 
-        // 1. Créer le premier client
-        Client client1 = new Client();
-        client1.setNom("Ben Ali");
-        client1.setPrenom("Ahmed");
-        client1.setEmail("ahmed.test@example.com");
-        client1.setTelephone("20111222");
-        client1.setNumPermis("PERMIS001");
-        client1.setDateInscription(LocalDate.now());
+        ClientDTO client2 = ClientDTO.builder()
+                .nom("Trabelsi").prenom("Amira")
+                .email("amira.test@example.com")
+                .telephone("22123456").numPermis("PERMIS002")
+                .dateInscription(LocalDate.now())
+                .build();
 
-        // 2. Créer le deuxième client
-        Client client2 = new Client();
-        client2.setNom("Trabelsi");
-        client2.setPrenom("Amira");
-        client2.setEmail("amira.test@example.com");
-        client2.setTelephone("22123456");
-        client2.setNumPermis("PERMIS002");
-        client2.setDateInscription(LocalDate.now());
+        // 2. Enregistrer
+        ClientDTO saved1 = clientService.creer(client1);
+        ClientDTO saved2 = clientService.creer(client2);
 
-        // 3. Enregistrer les deux clients
-        Client clientEnregistre1 = clientService.create(client1);
-        Client clientEnregistre2 = clientService.create(client2);
+        assertNotNull(saved1.getId());
+        assertNotNull(saved2.getId());
 
-        assertNotNull(clientEnregistre1.getIdClient());
-        assertNotNull(clientEnregistre2.getIdClient());
+        // 3. Afficher tous les clients
+        clientService.findAll().forEach(c -> System.out.println(c.getNom()));
 
-        System.out.println("Premier client créé : " + clientEnregistre1);
-        System.out.println("Deuxième client créé : " + clientEnregistre2);
+        // 4. Rechercher par ID
+        Long id = saved1.getId();
+        ClientDTO trouve = clientService.findById(id);
+        assertNotNull(trouve);
+        assertEquals("Ben Ali", trouve.getNom());
 
-        // 4. Afficher tous les clients
-        System.out.println("Liste des clients :");
-        clientService.findAll().forEach(System.out::println);
+        // 5. Nombre de clients
+        System.out.println("Nombre de clients : " + clientService.findAll().size());
 
-        // 5. Rechercher un client par ID
-        Long id = clientEnregistre1.getIdClient();
-
-        Client clientTrouve = clientService.findById(id);
-
-        assertNotNull(clientTrouve);
-        System.out.println("Client recherché : " + clientTrouve);
-
-        // 6. Afficher le nombre de clients
-        System.out.println(
-                "Nombre de clients : " + clientService.count()
-        );
-
-        // 7. Supprimer le premier client
+        // 6. Supprimer et vérifier
         clientService.deleteById(id);
+        assertThrows(RuntimeException.class, () -> clientService.findById(id));
 
-        // 8. Vérifier que le client n'existe plus
-        assertThrows(
-                RuntimeException.class,
-                () -> clientService.findById(id)
-        );
-
-        System.out.println("Client supprimé avec succès !");
+        // 7. Nettoyage du second client
+        clientService.deleteById(saved2.getId());
     }
 }
