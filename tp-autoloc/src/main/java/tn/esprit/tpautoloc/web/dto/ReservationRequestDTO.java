@@ -24,10 +24,12 @@ public class ReservationRequestDTO {
     private Long vehiculeId;
 
     @NotNull(message = "La date de début est obligatoire")
-    @FutureOrPresent(message = "La date de début doit être aujourd'hui ou dans le futur")
+    @Future(message = "La date de début doit être dans le futur")
     private LocalDate dateDebut;
 
     @NotNull(message = "La date de fin est obligatoire")
     @Future(message = "La date de fin doit être dans le futur")
     private LocalDate dateFin;
 }
+
+

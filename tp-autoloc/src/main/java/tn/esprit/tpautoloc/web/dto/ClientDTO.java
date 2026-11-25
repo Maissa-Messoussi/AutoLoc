@@ -31,3 +31,5 @@ public class ClientDTO {
     private String numPermis;
     private LocalDate dateInscription;
 }
+
+

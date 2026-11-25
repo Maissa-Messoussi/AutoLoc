@@ -31,3 +31,6 @@ public class PaiementDTO {
     @NotNull(message = "Le contrat est obligatoire")
     private Long contratId;
 }
+
+
+

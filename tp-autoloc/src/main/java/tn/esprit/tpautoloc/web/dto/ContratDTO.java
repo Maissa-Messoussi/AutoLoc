@@ -24,3 +24,6 @@ public class ContratDTO {
     private Boolean valide;
     private Long reservationId;
 }
+
+
+
