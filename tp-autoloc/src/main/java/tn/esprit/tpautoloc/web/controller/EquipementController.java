@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.tpautoloc.domain.Equipement;
 import tn.esprit.tpautoloc.service.IEquipementService;
+import tn.esprit.tpautoloc.web.dto.EquipementDTO;
 
 import java.util.List;
 
@@ -20,46 +22,49 @@ public class EquipementController {
 
     private final IEquipementService equipementService;
 
-    @Operation(summary = "Lister les equipements")
-    @ApiResponse(responseCode = "200", description = "Liste des equipements")
+    @Operation(summary = "Lister")
+    @ApiResponse(responseCode = "200", description = "Liste")
     @GetMapping
-    public List<Equipement> findAll() {
-        return equipementService.findAll();
+    public ResponseEntity<List<EquipementDTO>> findAll() {
+        return ResponseEntity.ok(equipementService.findAll());
     }
 
-    @Operation(summary = "Consulter un equipement")
-    @ApiResponse(responseCode = "200", description = "Equipement trouve")
-    @ApiResponse(responseCode = "404", description = "Equipement introuvable")
+    @Operation(summary = "Consulter par identifiant")
+    @ApiResponse(responseCode = "200", description = "Trouve")
+    @ApiResponse(responseCode = "404", description = "Introuvable")
     @GetMapping("/{id}")
-    public Equipement findById(@Parameter(description = "Identifiant") @PathVariable Long id) {
-        return equipementService.findById(id);
+    public ResponseEntity<EquipementDTO> findById(
+            @Parameter(description = "Identifiant") @PathVariable Long id) {
+        return ResponseEntity.ok(equipementService.findById(id));
     }
 
-    @Operation(summary = "Creer un equipement")
-    @ApiResponse(responseCode = "201", description = "Equipement cree")
+    @Operation(summary = "Creer")
+    @ApiResponse(responseCode = "201", description = "Cree")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Equipement create(@RequestBody Equipement equipement) {
-        return equipementService.create(equipement);
+    public ResponseEntity<EquipementDTO> creer(@Valid @RequestBody EquipementDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(equipementService.creer(dto));
     }
 
-    @Operation(summary = "Modifier un equipement")
-    @ApiResponse(responseCode = "200", description = "Equipement modifie")
+    @Operation(summary = "Modifier")
+    @ApiResponse(responseCode = "200", description = "Modifie")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
-    @ApiResponse(responseCode = "404", description = "Equipement introuvable")
+    @ApiResponse(responseCode = "404", description = "Introuvable")
     @PutMapping("/{id}")
-    public Equipement update(@Parameter(description = "Identifiant") @PathVariable Long id,
-                             @RequestBody Equipement equipement) {
-        return equipementService.update(id, equipement);
+    public ResponseEntity<EquipementDTO> update(
+            @Parameter(description = "Identifiant") @PathVariable Long id,
+            @Valid @RequestBody EquipementDTO dto) {
+        return ResponseEntity.ok(equipementService.update(id, dto));
     }
 
-    @Operation(summary = "Supprimer un equipement")
-    @ApiResponse(responseCode = "204", description = "Equipement supprime")
-    @ApiResponse(responseCode = "404", description = "Equipement introuvable")
+    @Operation(summary = "Supprimer")
+    @ApiResponse(responseCode = "204", description = "Supprime")
+    @ApiResponse(responseCode = "404", description = "Introuvable")
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@Parameter(description = "Identifiant") @PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "Identifiant") @PathVariable Long id) {
         equipementService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

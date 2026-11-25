@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import tn.esprit.tpautoloc.web.dto.PaiementDTO;
 import tn.esprit.tpautoloc.service.IPaiementService;
@@ -33,7 +34,7 @@ public class PaiementController {
     @ApiResponse(responseCode = "201", description = "Paiement cree")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    public ResponseEntity<PaiementDTO> creer(@RequestBody PaiementDTO dto) {
+    public ResponseEntity<PaiementDTO> creer(@Valid @RequestBody PaiementDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(paiementService.creer(dto));
     }
@@ -54,7 +55,7 @@ public class PaiementController {
     @PutMapping("/{id}")
     public ResponseEntity<PaiementDTO> update(
             @Parameter(description = "Identifiant") @PathVariable Long id,
-            @RequestBody PaiementDTO dto) {
+            @Valid @RequestBody PaiementDTO dto) {
         return ResponseEntity.ok(paiementService.update(id, dto));
     }
 

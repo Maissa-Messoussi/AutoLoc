@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class VehiculeController {
     @ApiResponse(responseCode = "201", description = "Vehicule cree")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    public ResponseEntity<VehiculeDTO> creer(@RequestBody VehiculeDTO dto) {
+    public ResponseEntity<VehiculeDTO> creer(@Valid @RequestBody VehiculeDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(vehiculeService.creer(dto));
     }
@@ -53,7 +54,7 @@ public class VehiculeController {
     @PutMapping("/{id}")
     public ResponseEntity<VehiculeDTO> update(
             @Parameter(description = "Identifiant") @PathVariable Long id,
-            @RequestBody VehiculeDTO dto) {
+            @Valid @RequestBody VehiculeDTO dto) {
         return ResponseEntity.ok(vehiculeService.update(id, dto));
     }
 
@@ -73,6 +74,26 @@ public class VehiculeController {
     @PutMapping("/{vehiculeId}/desaffecter-agence")
     public ResponseEntity<Void> desaffecterDeAgence(@PathVariable Long vehiculeId) {
         vehiculeService.desaffecterVehiculeDeAgence(vehiculeId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Affecter un equipement a un vehicule")
+    @ApiResponse(responseCode = "204", description = "Equipement affecte")
+    @ApiResponse(responseCode = "404", description = "Vehicule ou equipement introuvable")
+    @PutMapping("/{vehiculeId}/equipements/{equipementId}")
+    public ResponseEntity<Void> affecterEquipement(@PathVariable Long vehiculeId,
+                                                   @PathVariable Long equipementId) {
+        vehiculeService.affecterEquipementAVehicule(vehiculeId, equipementId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Desaffecter un equipement d'un vehicule")
+    @ApiResponse(responseCode = "204", description = "Equipement desaffecte")
+    @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
+    @PutMapping("/{vehiculeId}/desaffecter-equipement/{equipementId}")
+    public ResponseEntity<Void> desaffecterEquipement(@PathVariable Long vehiculeId,
+                                                      @PathVariable Long equipementId) {
+        vehiculeService.desaffecterEquipementDeVehicule(vehiculeId, equipementId);
         return ResponseEntity.noContent().build();
     }
 

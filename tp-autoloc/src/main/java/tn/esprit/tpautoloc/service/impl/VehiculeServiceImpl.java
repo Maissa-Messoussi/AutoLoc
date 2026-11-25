@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.tpautoloc.domain.Agence;
+import tn.esprit.tpautoloc.domain.Equipement;
 import tn.esprit.tpautoloc.domain.Vehicule;
 import tn.esprit.tpautoloc.exception.ResourceNotFoundException;
 import tn.esprit.tpautoloc.repository.IAgenceRepository;
+import tn.esprit.tpautoloc.repository.IEquipementRepository;
 import tn.esprit.tpautoloc.repository.IVehiculeRepository;
 import tn.esprit.tpautoloc.service.IVehiculeService;
 import tn.esprit.tpautoloc.web.dto.VehiculeDTO;
@@ -20,6 +22,7 @@ public class VehiculeServiceImpl implements IVehiculeService {
 
     private final IVehiculeRepository vehiculeRepository;
     private final IAgenceRepository agenceRepository;
+    private final IEquipementRepository equipementRepository;
     private final VehiculeMapper vehiculeMapper;
 
     @Override
@@ -79,6 +82,30 @@ public class VehiculeServiceImpl implements IVehiculeService {
             throw new IllegalArgumentException("Le véhicule n'est rattaché à aucune agence");
         }
         vehicule.setAgence(null);
+        vehiculeRepository.save(vehicule);
+    }
+
+    @Override
+    public void affecterEquipementAVehicule(Long vehiculeId, Long equipementId) {
+        Vehicule vehicule = getOrThrow(vehiculeId);
+        Equipement equipement = equipementRepository.findById(equipementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Équipement", equipementId));
+        boolean dejaAffecte = vehicule.getEquipements().stream()
+                .anyMatch(e -> e.getIdEquipement().equals(equipementId));
+        if (!dejaAffecte) {
+            vehicule.getEquipements().add(equipement);
+            vehiculeRepository.save(vehicule);
+        }
+    }
+
+    @Override
+    public void desaffecterEquipementDeVehicule(Long vehiculeId, Long equipementId) {
+        Vehicule vehicule = getOrThrow(vehiculeId);
+        boolean retire = vehicule.getEquipements()
+                .removeIf(e -> e.getIdEquipement().equals(equipementId));
+        if (!retire) {
+            throw new IllegalArgumentException("Cet équipement n'est pas affecté à ce véhicule");
+        }
         vehiculeRepository.save(vehicule);
     }
 

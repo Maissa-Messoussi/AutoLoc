@@ -2,7 +2,6 @@
 package tn.esprit.tpautoloc.service;
 
 import java.util.List;
-import tn.esprit.tpautoloc.domain.Agence;
 import tn.esprit.tpautoloc.web.dto.AgenceDTO;
 
 public interface IAgenceService {

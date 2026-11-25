@@ -3,7 +3,6 @@ package tn.esprit.tpautoloc.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,7 +41,7 @@ public class ClientController {
     @ApiResponse(responseCode = "201", description = "Client cree")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    public ResponseEntity<ClientDTO> creer(@RequestBody ClientDTO dto) {
+    public ResponseEntity<ClientDTO> creer(@Valid @RequestBody ClientDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clientService.creer(dto));
     }
@@ -54,7 +53,7 @@ public class ClientController {
     @PutMapping("/{id}")
     public ResponseEntity<ClientDTO> update(
             @Parameter(description = "Identifiant") @PathVariable Long id,
-            @RequestBody ClientDTO dto) {
+            @Valid @RequestBody ClientDTO dto) {
         return ResponseEntity.ok(clientService.update(id, dto));
     }
 

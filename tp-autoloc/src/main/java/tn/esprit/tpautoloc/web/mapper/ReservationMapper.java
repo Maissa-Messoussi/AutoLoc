@@ -22,6 +22,7 @@ public interface ReservationMapper {
 
     // Les relations sont posées par le service (client, véhicule)
     @Mapping(target = "idReservation", ignore = true)
+    @Mapping(target = "statut", ignore = true)
     @Mapping(target = "client", ignore = true)
     @Mapping(target = "vehicule", ignore = true)
     @Mapping(target = "contrat", ignore = true)

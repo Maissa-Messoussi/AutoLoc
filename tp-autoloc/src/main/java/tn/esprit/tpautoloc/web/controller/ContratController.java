@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class ContratController {
     @ApiResponse(responseCode = "201", description = "Contrat cree")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    public ResponseEntity<ContratDTO> creer(@RequestBody ContratDTO dto) {
+    public ResponseEntity<ContratDTO> creer(@Valid @RequestBody ContratDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(contratService.creer(dto));
     }
@@ -53,7 +54,7 @@ public class ContratController {
     @PutMapping("/{id}")
     public ResponseEntity<ContratDTO> update(
             @Parameter(description = "Identifiant") @PathVariable Long id,
-            @RequestBody ContratDTO dto) {
+            @Valid @RequestBody ContratDTO dto) {
         return ResponseEntity.ok(contratService.update(id, dto));
     }
 

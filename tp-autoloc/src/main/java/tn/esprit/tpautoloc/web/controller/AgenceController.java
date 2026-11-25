@@ -41,7 +41,7 @@ public class AgenceController {
     @ApiResponse(responseCode = "201", description = "Agence creee")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    public ResponseEntity<AgenceDTO> creer(@RequestBody AgenceDTO dto) {
+    public ResponseEntity<AgenceDTO> creer(@Valid @RequestBody AgenceDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(agenceService.creer(dto));
     }
@@ -53,7 +53,7 @@ public class AgenceController {
     @PutMapping("/{id}")
     public ResponseEntity<AgenceDTO> update(
             @Parameter(description = "Identifiant") @PathVariable Long id,
-            @RequestBody AgenceDTO dto) {
+            @Valid @RequestBody AgenceDTO dto) {
         return ResponseEntity.ok(agenceService.update(id, dto));
     }
 

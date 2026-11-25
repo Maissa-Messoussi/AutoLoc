@@ -4,13 +4,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.tpautoloc.service.IReservationService;
 import tn.esprit.tpautoloc.web.dto.ReservationRequestDTO;
 import tn.esprit.tpautoloc.web.dto.ReservationResponseDTO;
+import tn.esprit.tpautoloc.web.validator.ReservationRequestValidator;
 
 import java.util.List;
 
@@ -21,6 +24,7 @@ import java.util.List;
 public class ReservationController {
 
     private final IReservationService reservationService;
+    private final ReservationRequestValidator reservationRequestValidator;
 
     @Operation(summary = "Lister les reservations")
     @ApiResponse(responseCode = "200", description = "Liste des reservations")
@@ -42,7 +46,19 @@ public class ReservationController {
     @ApiResponse(responseCode = "201", description = "Reservation creee")
     @ApiResponse(responseCode = "400", description = "Donnees invalides")
     @PostMapping
-    public ResponseEntity<ReservationResponseDTO> creer(@RequestBody ReservationRequestDTO dto) {
+    public ResponseEntity<Object> creer(
+            @Valid @RequestBody ReservationRequestDTO dto,
+            BindingResult result) {
+
+        reservationRequestValidator.validate(dto, result);
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(
+                    result.getFieldErrors().stream()
+                            .map(error -> error.getField() + " : " + error.getDefaultMessage())
+                            .toList());
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(reservationService.creer(dto));
     }
@@ -54,7 +70,7 @@ public class ReservationController {
     @PutMapping("/{id}")
     public ResponseEntity<ReservationResponseDTO> update(
             @Parameter(description = "Identifiant") @PathVariable Long id,
-            @RequestBody ReservationRequestDTO dto) {
+            @Valid @RequestBody ReservationRequestDTO dto) {
         return ResponseEntity.ok(reservationService.update(id, dto));
     }
 
